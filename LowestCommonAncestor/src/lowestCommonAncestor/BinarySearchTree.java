@@ -151,7 +151,7 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 			if(node.right != null) {
 				rightHeight = height(node.right);
 			}
-			height = (Math.max(leftHeight,  rightHeight)) + 1;
+			height = (Math.max(leftHeight, rightHeight)) + 1;
 		}
 		return height;
 	}
@@ -270,7 +270,7 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 
 	private String prettyPrint(Node node, String prefix)
 	{
-		String prettyPrint = new String(prefix);
+		String prettyPrint = prefix;
 		if(isEmpty())
 		{
 			prettyPrint += "-null\n";
@@ -336,14 +336,14 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 	/**
 	 * Finds the path from root to child
 	 * @param child key of destination node
-	 * @return path as an ArrayList of Keys with root node at index 0
+	 * @return path as an List of Keys with root node at index 0
 	 */
-	public ArrayList<Key> getPath(Key child)
+	public List<Key> getPath(Key child)
 	{
-		ArrayList<Node> pathNodes = new ArrayList<>();
+		List<Node> pathNodes = new ArrayList<>();
 		pathNodes = getPath(this.root, child, pathNodes);
 		if(pathNodes != null) {
-			ArrayList<Key> pathKeys = new ArrayList<Key>();
+			final List<Key> pathKeys = new ArrayList<>();
 			for(int i = 0 ; i < pathNodes.size(); i++)
 			{
 				pathKeys.add(i, pathNodes.get(i).key);
@@ -353,7 +353,7 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 		return null;
 	}
 
-	private ArrayList<Node> getPath(Node root, Key child, ArrayList<Node> path)
+	private List<Node> getPath(Node root, Key child, List<Node> path)
 	{
 		path.add(root);
 		if(root.key.equals(child))
@@ -379,20 +379,19 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 	 * @param key2 (key of second descendant)
 	 * @return LCA (key of lowest common ancestor of both descendants)
 	 */
-	public Key LCA(Key key1, Key key2)
+	public Key LCA(final Key key1, final Key key2)
 	{
-		Key LCA = null;
 		if(this.contains(key1) && this.contains(key2))
 		{
 			//Get the paths to each key but remove the key itself (last element)
-			ArrayList<Key> path1 = getPath(key1);
+			List<Key> path1 = getPath(key1);
 			path1.remove(path1.size() - 1);
-			ArrayList<Key> path2 = getPath(key2);
+			List<Key> path2 = getPath(key2);
 			path2.remove(path2.size() - 1);
 			//Find the intersection of both paths and pick the deepest one
 			return path1.stream().distinct().filter(path2::contains).min(this::compareHeights).orElse(null);
 		}
-		return LCA;
+		return null;
 	}
 	
 }

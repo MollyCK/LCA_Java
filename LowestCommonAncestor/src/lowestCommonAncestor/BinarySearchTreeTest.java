@@ -9,13 +9,13 @@ public class BinarySearchTreeTest {
 	
 	@Test
 	public void testIsEmpty() {
-		BinarySearchTree<Integer, Character> testTree = new BinarySearchTree<Integer, Character>();
+		BinarySearchTree<Integer, Character> testTree = new BinarySearchTree<>();
 		//Test empty tree
-		assertTrue( "Testing empty tree", testTree.isEmpty());
+		assertTrue("Testing empty tree", testTree.isEmpty());
 		
 		//Test not empty tree
 		testTree.put(1, 'A');
-		assertFalse( "Testing non-empty tree", testTree.isEmpty());
+		assertFalse("Testing non-empty tree", testTree.isEmpty());
 	}
 	
 	@Test
@@ -80,8 +80,8 @@ public class BinarySearchTreeTest {
 	      "   |-null\n" +
 	      "    -null\n";
 	     assertEquals("Checking pretty printing of non-empty tree", result, bst.prettyPrintKeys());
-	     }
-	
+	}
+
 	@Test
 	public void testMedian()
 	{
@@ -103,8 +103,8 @@ public class BinarySearchTreeTest {
 		expectedResult = 'C';
 		assertEquals("Testing median() for EDCBA tree", expectedResult, testTree.median());
 		
-		//testing tree with median in left subtree
-		testTree = new BinarySearchTree<>();
+		//TODO testing tree with median in left subtree
+		//testTree = new BinarySearchTree<>();
 		
 	}
 	
