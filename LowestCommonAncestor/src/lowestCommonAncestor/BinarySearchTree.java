@@ -20,7 +20,7 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 	 * Private node class.
 	 */
 	private class Node {
-		private Key key;           // sorted by key
+		private final Key key;           // sorted by key
 		private Value val;         // associated data
 		private Node left, right;  // left and right subtrees
 		private int N;             // number of nodes in subtree
@@ -73,16 +73,24 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 		return get(root, key); 
 	}
 
-	private Value get(Node root, Key key) {
+	private Node getNode(Node root, Key key) 
+	{
 		if (root == null) 
 			return null;
 		int cmp = key.compareTo(root.key);
 		if(cmp < 0) 
-			return get(root.left, key);
+			return getNode(root.left, key);
 		else if (cmp > 0) 
-			return get(root.right, key);
+			return getNode(root.right, key);
 		else              
-			return root.val;
+			return root;
+	}
+	
+	private Value get(Node root, Key key) 
+	{
+		final Node node = getNode (root, key);
+		
+		return node == null?null:node.val;
 	}
 
 	/**
@@ -143,11 +151,16 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 			if(node.right != null) {
 				rightHeight = height(node.right);
 			}
-			height = (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
+			height = (Math.max(leftHeight,  rightHeight)) + 1;
 		}
 		return height;
 	}
 
+	private int compareHeights(Key key1, Key key2)
+	{
+		return Integer.compare(height(getNode(this.root, key1)), height(getNode(this.root, key2)));
+	}
+	
 	/**
 	 * Median key.
 	 * If the tree has N keys k1 < k2 < k3 < ... < kN, then their median key 
@@ -221,9 +234,10 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 		System.out.println(keysInOrder);
 		return keysInOrder;
 	}
+	
 	private String printKeysInOrder(Node node)
 	{
-		String keysInOrder = new String();
+		String keysInOrder = "";
 		keysInOrder += "(";
 		if(!isEmpty() || node != null)
 		{
@@ -326,16 +340,19 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 	 */
 	public ArrayList<Key> getPath(Key child)
 	{
-		ArrayList<Node> pathNodes = new ArrayList<Node>();
+		ArrayList<Node> pathNodes = new ArrayList<>();
 		pathNodes = getPath(this.root, child, pathNodes);
-		ArrayList<Key> pathKeys = new ArrayList<Key>();
-		for(int i = 0 ; i < pathNodes.size() - 1 ; i++)
-		{
-			pathKeys.add(i, pathNodes.get(i).key);
+		if(pathNodes != null) {
+			ArrayList<Key> pathKeys = new ArrayList<Key>();
+			for(int i = 0 ; i < pathNodes.size(); i++)
+			{
+				pathKeys.add(i, pathNodes.get(i).key);
+			}
+			return pathKeys;	
 		}
-		return pathKeys;	
+		return null;
 	}
-	
+
 	private ArrayList<Node> getPath(Node root, Key child, ArrayList<Node> path)
 	{
 		path.add(root);
@@ -357,6 +374,7 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 	
 	/**
 	 * Finds and returns the lowest common ancestor of two nodes in a BST given their keys
+	 * The lowest common ancestor of two nodes is that node which is furthest from a root that both source nodes' paths from that root have in common.
 	 * @param key1 (key of first descendant)
 	 * @param key2 (key of second descendant)
 	 * @return LCA (key of lowest common ancestor of both descendants)
@@ -364,27 +382,17 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 	public Key LCA(Key key1, Key key2)
 	{
 		Key LCA = null;
-		if(!this.contains(key1) & !this.contains(key2))
+		if(this.contains(key1) && this.contains(key2))
 		{
-			return LCA;
-		}
-		ArrayList<Key> path1 = getPath(key1);
-		ArrayList<Key> path2 = getPath(key2);
-		boolean found = false;
-		for(int i = path1.size()-1 ; i > -1 && !found; i--)
-		{
-			for(int j = path2.size()-1 ; j > -1 && !found; j--)
-			{
-				if(path1.get(i).equals(path2.get(j)))
-				{
-					found = true;
-					LCA = path1.get(i);
-				}
-			}
+			//Get the paths to each key but remove the key itself (last element)
+			ArrayList<Key> path1 = getPath(key1);
+			path1.remove(path1.size() - 1);
+			ArrayList<Key> path2 = getPath(key2);
+			path2.remove(path2.size() - 1);
+			//Find the intersection of both paths and pick the deepest one
+			return path1.stream().distinct().filter(path2::contains).min(this::compareHeights).orElse(null);
 		}
 		return LCA;
 	}
 	
 }
-
-
