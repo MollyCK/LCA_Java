@@ -22,17 +22,32 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 	/**
 	 * Private node class.
 	 */
-	private class Node {
+	class Node {
 		private Key key;         				// unique identifying attribute
 		private Value val;						// associated data
-		private ArrayList<Key> adjacents; 		// list of nodes that you can reach from this
+		private ArrayList<Key> destinations; 		// list of nodes that you can reach from this
 		private int indegree;					// the number of directed edges entering this
 		private int outdegree;					// the number of directed edges leaving this
 
 		public Node(Key key, Value val) {
 			this.val = val;
 			this.key = key;
-			this.adjacents = new ArrayList<Key>();
+			this.destinations = new ArrayList<Key>();
+		}
+		
+		public Key key()
+		{
+			return key;
+		}
+		
+		public Value val() 
+		{
+			return val;
+		}
+		
+		public String toString()
+		{
+			return "(" + this.key + "," + val + ")";
 		}
 	}
 	
@@ -44,13 +59,32 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 	}
 	
 	public void addNode(Key key, Value val) {
-		this.nodes.add(new Node(key, val));
+		if(key != null && val != null) {
+			//check for nodes with the same key
+			for(int i = 0 ; i < nodes.size(); i++)
+			{
+				if(this.nodes.get(i).key() == key) {
+					return;
+				}
+				
+			}
+			this.nodes.add(new Node(key, val));
+		}
+
 	}
 	
 	public Node get(Key key) {
-		for(int i = 0 ; i < this.nodes.size() ; i++) {
-			if(key.compareTo(nodes.get(i).key) == 0) {
-				return nodes.get(i);
+		return get(key, this.nodes);
+	}
+	
+	private Node get(Key key, ArrayList<Node> nodes)
+	{
+		if(key != null)
+		{
+			for(int i = 0 ; i < this.nodes.size() ; i++) {
+				if(key.compareTo(nodes.get(i).key) == 0) {
+					return nodes.get(i);
+				}
 			}
 		}
 		return null;
@@ -71,12 +105,16 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		if(isValidNode(key))
 		{
 			//need to iterate through all the nodes and remove the soon to 
-			//be deleted node's key from any adjacents lists
-			for(int i = 0 ; i < this.nodes.size(); i++)
+			//be deleted node's key from any destinations lists, reduce E, and 
+			//the source node's outdegree
+			for(int i = 0 ; i < nodes.size(); i++)
 			{
-				if(nodes.get(i).adjacents.contains(key))
+				if(nodes.get(i).destinations.contains(key))
 				{
-					nodes.get(i).adjacents.remove(key);
+					nodes.get(i).destinations.remove(key);
+					nodes.get(i).outdegree--;
+					get(key).indegree--;
+					E--;
 				}
 			}
 			nodes.remove(get(key));
@@ -108,14 +146,14 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 	{
 		if((isValidNode(v)) && (isValidNode(w)))
 		{
-			get(v).adjacents.add(w);
+			get(v).destinations.add(w);
 			get(v).outdegree++;
 			get(w).indegree++; 
 			E++;
 			if(!this.isAcyclic())
 			{
 				//undo the addEdge
-				get(v).adjacents.remove(w);
+				get(v).destinations.remove(w);
 				get(v).outdegree--;
 				get(w).indegree--; 
 				E--;
@@ -131,26 +169,26 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		}		
 	}
 
-	private Boolean isAcyclic()
+	public Boolean isAcyclic()
 	{
 		ArrayList<Node> graphCopy = new ArrayList<Node>(this.nodes.size());
-		for(int i = 0 ; i < graphCopy.size() ; i++)
+		for(int i = 0 ; i < this.nodes.size() ; i++)
 		{
-			graphCopy.set(i, this.nodes.get(i));
+			graphCopy.add(this.nodes.get(i));
 		}
 		return isAcyclic(graphCopy);
 	}
 	
 	private Boolean isAcyclic(ArrayList<Node> nodes)
 	{
-		for(int i = 0 ; i < nodes.size(); i++)
+		for(int i = 0 ; i <= nodes.size(); i++)
 		{
 			if(nodes.size() == 0)
 				return true; //If the graph has no nodes, stop. The graph is acyclic.
 			else if(getLeaf(nodes) == null)
 				return false; //If the graph has no leaf, stop. The graph is cyclic.
 			else 
-				nodes.remove(getLeaf(nodes)); //Choose a leaf of the graph. Remove this leaf and all edges going into the leaf to get a new graph.
+				deleteNode(getLeaf(nodes).key(), nodes); //Choose a leaf of the graph. Remove this leaf and all edges going into the leaf to get a new graph.
 		}
 		return false;
 	}
@@ -172,15 +210,31 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		return null;
 	}
 	
- 	private Boolean isValidNode(Key key)
-	{
-		for(int i = 0 ; i < nodes.size(); i++) {
-			if(key.compareTo(nodes.get(i).key) == 0) {
-				return true;
-			}
-		}
-		return false;
+ 	public Boolean isValidNode(Key key)
+ 	{
+ 		if(key != null)
+ 		{
+ 			for(int i = 0 ; i < nodes.size(); i++) {
+ 				if(key.compareTo(nodes.get(i).key) == 0) {
+ 					return true;
+ 				}
+ 			}
+ 		}
+ 		return false;
 	}
+ 	
+ 	public Boolean isValidNode(Key key, Value val)
+ 	{
+ 		if(key != null && val != null)
+ 		{
+ 			for(int i = 0 ; i < nodes.size(); i++) {
+ 				if(key.compareTo(nodes.get(i).key) == 0 && val == nodes.get(i).val()) {
+ 					return true;
+ 				}
+ 			}
+ 		}
+ 		return false;
+ 	}
 	
 	public int indegree(Key v)
 	{
