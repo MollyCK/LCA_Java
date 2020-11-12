@@ -56,6 +56,7 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 
 	public DirectedAcyclicGraph() {
 		nodes = new ArrayList<Node>();
+		E = 0;
 	}
 	
 	public void addNode(Key key, Value val) {
@@ -77,13 +78,13 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		return get(key, this.nodes);
 	}
 	
-	private Node get(Key key, ArrayList<Node> nodes)
+	private Node get(Key key, ArrayList<Node> graph)
 	{
 		if(key != null)
 		{
-			for(int i = 0 ; i < this.nodes.size() ; i++) {
-				if(key.compareTo(nodes.get(i).key) == 0) {
-					return nodes.get(i);
+			for(int i = 0 ; i < graph.size() ; i++) {
+				if(key.compareTo(graph.get(i).key) == 0) {
+					return graph.get(i);
 				}
 			}
 		}
@@ -92,7 +93,11 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 	
 	public Boolean deleteNode(Key key)
 	{
-		return deleteNode(key, this.nodes);
+		Node toBeDel = get(key);
+		Boolean returnValue = deleteNode(key, this.nodes);
+		if(returnValue)
+			this.E -= (toBeDel.destinations.size());
+		return returnValue;
 	}
 	
 	/**
@@ -100,24 +105,23 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 	 * @param key
 	 * @return true if graph contained the node and it has been removed
 	 */
-	private Boolean deleteNode(Key key, ArrayList<Node> nodes)
+	private Boolean deleteNode(Key key, ArrayList<Node> graph)
 	{
 		if(isValidNode(key))
 		{
 			//need to iterate through all the nodes and remove the soon to 
 			//be deleted node's key from any destinations lists, reduce E, and 
 			//the source node's outdegree
-			for(int i = 0 ; i < nodes.size(); i++)
+			for(int i = 0 ; i < graph.size(); i++)
 			{
-				if(nodes.get(i).destinations.contains(key))
+				if(graph.get(i).destinations.contains(key))
 				{
-					nodes.get(i).destinations.remove(key);
-					nodes.get(i).outdegree--;
-					get(key).indegree--;
-					E--;
+					graph.get(i).destinations.remove(key);
+					graph.get(i).outdegree--;
+					get(key, graph).indegree--;
 				}
 			}
-			nodes.remove(get(key));
+			graph.remove(get(key, graph));
 			return true;
 		} else {
 			return false;
@@ -174,21 +178,30 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		ArrayList<Node> graphCopy = new ArrayList<Node>(this.nodes.size());
 		for(int i = 0 ; i < this.nodes.size() ; i++)
 		{
-			graphCopy.add(this.nodes.get(i));
+			Node copy = new Node(this.nodes.get(i).key(), this.nodes.get(i).val());
+			//copy original Node's destinations ArrayList to the copy Node
+			for(int j = 0 ; j < this.nodes.get(i).destinations.size(); j++)
+			{
+				copy.destinations.add(this.nodes.get(i).destinations.get(j));
+			}
+			copy.indegree = this.nodes.get(i).indegree;
+			copy.outdegree = this.nodes.get(i).outdegree;
+			graphCopy.add(copy);
 		}
 		return isAcyclic(graphCopy);
 	}
 	
-	private Boolean isAcyclic(ArrayList<Node> nodes)
+	private Boolean isAcyclic(ArrayList<Node> graph)
 	{
-		for(int i = 0 ; i <= nodes.size(); i++)
+		int size = graph.size();
+		for(int i = 0 ; i <= size; i++)
 		{
-			if(nodes.size() == 0)
+			if(graph.size() == 0)
 				return true; //If the graph has no nodes, stop. The graph is acyclic.
-			else if(getLeaf(nodes) == null)
+			else if(getLeaf(graph) == null)
 				return false; //If the graph has no leaf, stop. The graph is cyclic.
 			else 
-				deleteNode(getLeaf(nodes).key(), nodes); //Choose a leaf of the graph. Remove this leaf and all edges going into the leaf to get a new graph.
+				deleteNode(getLeaf(graph).key(), graph); //Choose a leaf of the graph. Remove this leaf and all edges going into the leaf to get a new graph.
 		}
 		return false;
 	}
@@ -199,12 +212,12 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 	 * @param nodes
 	 * @return a node or null if there is no leaf in the provides graph
 	 */
-	private Node getLeaf(ArrayList<Node> nodes) 
+	private Node getLeaf(ArrayList<Node> graph) 
 	{
-		for(int i = 0 ; i < nodes.size(); i++) 
+		for(int i = 0 ; i < graph.size(); i++) 
 		{
-			if(nodes.get(i).outdegree == 0) {
-				return nodes.get(i);
+			if(graph.get(i).outdegree == 0) {
+				return graph.get(i);
 			}
 		}
 		return null;

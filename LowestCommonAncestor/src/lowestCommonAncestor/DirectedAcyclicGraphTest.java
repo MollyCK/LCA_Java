@@ -105,7 +105,7 @@ public class DirectedAcyclicGraphTest {
 		//test empty graph
 		assertTrue(testDAG.isAcyclic());
 		
-		//test cyclic graph
+		//test acyclic graph
 		testDAG.addNode(1, 'a');
 		testDAG.addNode(2, 'b');
 		testDAG.addNode(3, 'c');
@@ -117,13 +117,16 @@ public class DirectedAcyclicGraphTest {
 		testDAG.addEdge(2, 3);
 		testDAG.addEdge(2, 4);
 		testDAG.addEdge(4, 5);
-		testDAG.addEdge(5, 6);
-		testDAG.addEdge(6, 4);
+		testDAG.addEdge(4, 6);
+		testDAG.addEdge(5, 6);	
 		testDAG.addEdge(6, 3);
 		
-		assertFalse(testDAG.isAcyclic());
+		assertTrue(testDAG.isAcyclic());
 		
-		//test acyclic graph
+		//test try to make cyclic graph
+		assertFalse(testDAG.addEdge(6, 4)); //trying to add this edge will fail because it would make the graph cyclic
+		assertTrue(testDAG.isAcyclic()); //make sure that there hasn't been an error somewhere and that the graph is still acyclical and unchanged
+		
 	}
 	
 	@Test
