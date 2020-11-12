@@ -6,11 +6,8 @@
 
 /*
  * TODO
- * Commit to DAG branch with this code in LowestCommonAncestor folder
- * Assert that the graph is acyclic
- * Write comprehensive tests for DirectedAcyclicGraph class
  * Write tests to test the BST implementation of LCA on DAG
- * Write LCA implementation for DAG
+ * Write LCA implementation for DAG (https://web.archive.org/web/20190914030055/http://www.gghh.name:80/dibtp/2014/02/25/how-does-mercurial-select-the-greatest-common-ancestor.html)
  */
 
 package lowestCommonAncestor;
@@ -191,6 +188,12 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		return isAcyclic(graphCopy);
 	}
 	
+	
+	/**
+	 * Original pseudo-code algorithm from https://www.cs.hmc.edu/~keller/courses/cs60/s98/examples/acyclic/
+	 * @param graph
+	 * @return
+	 */
 	private Boolean isAcyclic(ArrayList<Node> graph)
 	{
 		int size = graph.size();
@@ -274,4 +277,9 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		}
 	}
 
+	public Key LCA(Key node1, Key node2)
+	{
+
+	}
+	
 }

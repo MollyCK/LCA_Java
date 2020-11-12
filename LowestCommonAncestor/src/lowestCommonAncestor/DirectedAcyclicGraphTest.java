@@ -126,7 +126,6 @@ public class DirectedAcyclicGraphTest {
 		//test try to make cyclic graph
 		assertFalse(testDAG.addEdge(6, 4)); //trying to add this edge will fail because it would make the graph cyclic
 		assertTrue(testDAG.isAcyclic()); //make sure that there hasn't been an error somewhere and that the graph is still acyclical and unchanged
-		
 	}
 	
 	@Test
