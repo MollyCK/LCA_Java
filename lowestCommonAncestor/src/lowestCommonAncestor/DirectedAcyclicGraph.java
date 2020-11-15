@@ -14,6 +14,8 @@ package lowestCommonAncestor;
 
 import java.util.ArrayList;
 
+import lowestCommonAncestor.BinarySearchTree.Node;
+
 public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 
 	/**
@@ -277,8 +279,10 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		}
 	}
 
-	public ArrayList<Node> getPath(Key node)
+	//will need to note all the paths from the root to the node so that we don't miss any potential LCA nodes
+	public ArrayList<ArrayList<Key>> getPath(Key root, Key node) 
 	{
+		ArrayList<ArrayList<Key>> paths = new ArrayList<ArrayList<Key>>();
 		
 	}
 	
@@ -287,23 +291,92 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 	 * @param node1
 	 * @param node2
 	 * @return
+	 * For each node in nodeList, we need a list of its paths. Given that paths are created as lists, we need a list (to correspond with the nodesList positions) of a list of paths(lists)
 	 */
 	public Key LCA(Key root, Key[] nodeList)
 	{
+		int steps = Integer.MAX_VALUE;
 		//test if the provided root is actually a root (should only have outcoming edges with no incoming ones)
 		if(get(root).indegree == 0 && get(root).outdegree != 0)
 		{
 			//get paths for all of the nodes in nodeList
-			ArrayList<Node[]> paths = new ArrayList<Node[]>();
+			ArrayList<ArrayList<ArrayList<Key>>> pathsList = new ArrayList<ArrayList<ArrayList<Key>>>();
 			for(int i = 0 ; i < nodeList.length ; i++)
 			{
-				paths.set(i, getPath(nodeList[i]));
+				pathsList.set(i, getPath(root, nodeList[i]));
 			}
 			//iterate through the paths from back to front to find the common node (if it exists) that is furthest from the root.
 			
 		} else {
 			return null;
 		}
+	}
+	
+	
+	/*
+	 * All the code below is copied from the BinarySearchTree class and edited to be applied to the DirectedAcyclicGraph class
+	 */
+	
+	public ArrayList<Key> getPath(Key child)
+	{
+		ArrayList<Node> pathNodes = new ArrayList<Node>();
+		pathNodes = getPath(this.root, child, pathNodes);
+		ArrayList<Key> pathKeys = new ArrayList<Key>();
+		for(int i = 0 ; i < pathNodes.size() - 1 ; i++)
+		{
+			pathKeys.add(i, pathNodes.get(i).key);
+		}
+		return pathKeys;	
+	}
+	
+	private ArrayList<Node> getPath(Node root, Key child, ArrayList<Node> path)
+	{
+		path.add(root);
+		if(root.key.equals(child))
+		{
+			return path;
+		}
+		if(root.left != null && getPath(root.left, child, path) != null)
+		{
+			return path;
+		}
+		if(root.right != null && getPath(root.right, child,path) != null)
+		{
+			return path;
+		}
+		path.remove(path.size()-1);
+		return null;
+	}
+	
+	/**
+	 * Finds and returns the lowest common ancestor of two nodes in a BST given their keys
+	 * The lowest common ancestor of two nodes is that node which is furthest from a root that both source nodes' paths from that root have in common.
+	 * @param key1 (key of first descendant)
+	 * @param key2 (key of second descendant)
+	 * @return LCA (key of lowest common ancestor of both descendants)
+	 */
+	public Key LCA(Key key1, Key key2)
+	{
+		Key LCA = null;
+		if(!this.contains(key1) & !this.contains(key2))
+		{
+			return LCA;
+		}
+		ArrayList<Key> path1 = getPath(key1);
+		ArrayList<Key> path2 = getPath(key2);
+		boolean found = false;
+		for(int i = path1.size()-1 ; i > -1 && !found; i--)
+		{
+			for(int j = path2.size()-1 ; j > -1 && !found; j--)
+			{
+				if(path1.get(i).equals(path2.get(j)))
+				{
+					found = true;
+					LCA = path1.get(i);
+				}
+			}
+		}
+		return LCA;
 	}
 	
 }
