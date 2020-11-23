@@ -288,31 +288,37 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 	}
 	
 	/**
-	 * The lowest common ancestor of two nodes is that node which is furthest from a root that both source nodes' longest paths from that root have in common.
+	 * The lowest common ancestor of 2 nodes is that node which is furthest from a root that the source nodes' longest paths from that root have in common.
 	 * @param node1
 	 * @param node2
 	 * @return
-	 * For each node in nodeList, its longest path. Given that paths are created as lists, we need a list (to correspond with the nodesList positions) of paths(lists)
+	 * Limitations: the function will return the first possible LCA that it comes across in the first source node's path
+	 * 				E.g. If srcNode1's path has a Key 'g' 5 steps from the root and 'g' is also present in the srcNodes2's path, then it will return 'g' as the LCA regardless of how far it is from the root on srcNode2's path
 	 */
-	public Key LCA(Key root, Key[] nodeList)
+	public Key LCA(Key root, Key srcNode1, Key srcNode2)
 	{
-		//test if the provided root is actually a root (should only have outcoming edges with no incoming ones)
-		if(get(root).indegree == 0 && get(root).outdegree != 0)
+		//test if the provided root is actually a root (should only have outcoming edges with no incoming ones) and if provided source nodes are valid
+		if(get(root).indegree == 0 && get(root).outdegree != 0 && isValidNode(srcNode1) && isValidNode(srcNode2))
 		{
-			//get paths for all of the nodes in nodeList
-			ArrayList<ArrayList<Key>> paths = new ArrayList<ArrayList<Key>>();
-			for(int i = 0 ; i < nodeList.length ; i++)
-			{
-				paths.set(i, getLongestPath(root, nodeList[i]));
-			}
+			ArrayList<Key> path1 = getLongestPath(root, srcNode1);
+			ArrayList<Key> path2 = getLongestPath(root, srcNode2);
 			//iterate through the paths from back to front to find the common node (if it exists) that is furthest from the root.
-			for(int i = paths.size() - 1 ; i > 0 ; i--)
+			Key LCA = null;
+			boolean found = false;
+			for(int i = path1.size()-1 ; i > -1 && !found; i--)
 			{
-				
+				for(int j = path2.size()-1 ; j > -1 && !found; j--)
+				{
+					if(path1.get(i).equals(path2.get(j)))
+					{
+						found = true;
+						LCA = path1.get(i);
+					}
+				}
 			}
-		} else {
-			return null;
-		}
+			return LCA;
+		} 
+		else return null;
 	}
 	
 }
