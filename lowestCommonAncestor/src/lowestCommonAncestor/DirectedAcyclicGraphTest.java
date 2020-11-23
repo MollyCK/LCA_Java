@@ -176,6 +176,29 @@ public class DirectedAcyclicGraphTest {
 	}
 
 	@Test
+	public void topologicalSortTest()
+	{
+		testDAG = new DirectedAcyclicGraph<Integer, Character>();
+		
+		testDAG.addNode(0, 'a');
+		testDAG.addNode(1, 'b');
+		testDAG.addNode(2, 'c');
+		testDAG.addNode(3, 'd');
+		testDAG.addNode(4, 'e');
+		testDAG.addNode(5, 'f');
+		
+		testDAG.addEdge(5, 2);
+		testDAG.addEdge(5, 0);
+		testDAG.addEdge(4, 0);
+		testDAG.addEdge(4, 1);
+		testDAG.addEdge(2, 3);
+		testDAG.addEdge(3, 1);	
+		
+		String expectedResult = "5 4 2 3 1 0 ";
+		assertEquals(expectedResult, testDAG.topologicalSort());
+	}
+	
+	@Test
 	public void testForDAG()
 	{
 		DirectedAcyclicGraph<Integer, Character> testDAG = new DirectedAcyclicGraph<Integer, Character>();

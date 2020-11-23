@@ -15,6 +15,8 @@
 package lowestCommonAncestor;
 
 import java.util.ArrayList;
+import java.io.*; 
+import java.util.*; 
 
 public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 
@@ -27,11 +29,13 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		private ArrayList<Key> destinations; 	// list of nodes that you can reach from this
 		private int indegree;					// the number of directed edges entering this
 		private int outdegree;					// the number of directed edges leaving this
-
+		private boolean visited;				// variable used for topological sort
+		
 		public Node(Key key, Value val) {
 			this.val = val;
 			this.key = key;
 			this.destinations = new ArrayList<Key>();
+			this.visited = false;
 		}
 		
 		public Key key()
@@ -278,7 +282,50 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 			return -1;
 		}
 	}
-
+	
+	/*
+	 * The below implementation of topological sort was taken from https://www.geeksforgeeks.org/topological-sorting/
+	 * and edited for purpose by MollyCK
+	 */
+	// A recursive function used by topologicalSort 
+    private void topologicalSortUtil(Key v, Stack<Key> stack) 
+    { 
+        // Mark the current node as visited. 
+        get(v).visited = true; 
+        Key i; 
+  
+        // Recur for all the vertices adjacent to this vertex 
+        Iterator<Key> it = get(v).destinations.iterator(); 
+        while (it.hasNext()) { 
+            i = it.next(); 
+            if (!get(i).visited) 
+                topologicalSortUtil(i, stack); 
+        } 
+  
+        // Push current vertex to stack 
+        // which stores result 
+        stack.push(v); 
+    } 
+  
+    // The function to do Topological Sort. 
+    // It uses recursive topologicalSortUtil() 
+    public String topologicalSort() 
+    { 
+        Stack<Key> stack = new Stack<Key>(); 
+  
+        // Call the recursive helper function to store Topological Sort 
+        // starting from all vertices one by one 
+        for (int i = 0; i < this.nodes.size(); i++) 
+            if (this.nodes.get(i).visited == false) 
+                topologicalSortUtil(this.nodes.get(i).key(), stack); 
+  
+        // Concatenate contents of stack 
+        String result = new String();
+        while (stack.empty() == false) 
+            result += (stack.pop() + " "); 
+        return result;
+    } 
+	
 	public ArrayList<Key> getLongestPath(Key root, Key node) 
 	{
 		ArrayList<Key> paths = new ArrayList<Key>();
