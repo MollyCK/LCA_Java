@@ -94,7 +94,15 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		return null;
 	}
 	
-	public Boolean deleteNode(Key key)
+	private void resetVisited()
+	{
+		for(int i = 0 ; i < this.nodes.size(); i++)
+		{
+			this.nodes.get(i).visited = false;
+		}
+	}
+	
+ 	public Boolean deleteNode(Key key)
 	{
 		Node toBeDel = get(key);
 		Boolean returnValue = deleteNode(key, this.nodes);
@@ -193,8 +201,7 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		}
 		return isAcyclic(graphCopy);
 	}
-	
-	
+		
 	/**
 	 * Original pseudo-code algorithm from https://www.cs.hmc.edu/~keller/courses/cs60/s98/examples/acyclic/
 	 * @param graph
@@ -302,8 +309,7 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
                 topologicalSortUtil(i, stack); 
         } 
   
-        // Push current vertex to stack 
-        // which stores result 
+        // Push current vertex to stack which stores result 
         stack.push(v); 
     } 
   
@@ -319,17 +325,71 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
             if (this.nodes.get(i).visited == false) 
                 topologicalSortUtil(this.nodes.get(i).key(), stack); 
   
-        // Concatenate contents of stack 
+        resetVisited();
+        
+        // Concatenate contents of stack into a String
         String result = new String();
         while (stack.empty() == false) 
             result += (stack.pop() + " "); 
         return result;
     } 
 	
-	public ArrayList<Key> getLongestPath(Key root, Key node) 
+	public ArrayList<Key> getLongestPath(Key root, Key srcNode) 
 	{
+		Stack<Key> stack = new Stack<Key>(); 
+		ArrayList<Key> distancesKeys = new ArrayList<Key>(this.nodes.size());
+		ArrayList<Integer> distances = new ArrayList<Integer>(this.nodes.size());
+		for(int i = 0 ; i < this.nodes.size() ; i++)
+		{
+			distancesKeys.add(i, this.nodes.get(i).key());
+		}
+		
+		//Call the recursive helper function to store Topological Sort starting from all Nodes one by one  
+		
+		for(int i = 0 ; i < this.nodes.size(); i++)
+		{
+			if(this.nodes.get(i).visited == false)
+			{
+				topologicalSortUtil(this.nodes.get(i).key(), stack);
+			}
+		}
+		
+		//initialise distances to all vertices as infinite and distance to source as 0
+		for(int i = 0 ; i < distancesKeys.size(); i++)
+		{
+			distances.add(i, Integer.MIN_VALUE);
+		}
+		int index = distancesKeys.indexOf(srcNode);
+		distances.set(index, 0);
+		
+		//process Nodes in topological order
+		while(stack.empty() == false)
+		{
+			//get the next vertex from topological order
+			Key u = stack.peek();
+			stack.pop();
+			Key v;
+			
+			//update distances of all adjacent vertices 
+			Iterator<Key> it = get(u).destinations.iterator(); 
+			//if(distances.get(distancesKeys.indexOf(u)) != Integer.MIN_VALUE) // This is always true...
+			//{
+				while (it.hasNext())
+				{
+					v = it.next();
+					if(distances.get(distancesKeys.indexOf(v)) < distances.get(distancesKeys.indexOf(u)) + 1)
+					{
+						distances.set(distancesKeys.indexOf(v), distances.get(distancesKeys.indexOf(u)) + 1);
+					}
+				}
+			//}
+		}
+		
+		for(int i = 0 ; i < this.nodes.size(); i++) 
+		{
+			System.out.println(distances.get(i) == Integer.MIN_VALUE ? "INF" : distances.get(i) + " ");
+		}
 		ArrayList<Key> paths = new ArrayList<Key>();
-		//do something here
 		return paths;
 		
 	}
