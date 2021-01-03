@@ -176,63 +176,28 @@ public class DirectedAcyclicGraphTest {
 	}
 
 	@Test
-	public void topologicalSortTest()
+	public void testForDAG()
 	{
-		testDAG = new DirectedAcyclicGraph<Integer, Character>();
-		
-		testDAG.addNode(0, 'a');
-		testDAG.addNode(1, 'b');
-		testDAG.addNode(2, 'c');
-		testDAG.addNode(3, 'd');
-		testDAG.addNode(4, 'e');
-		testDAG.addNode(5, 'f');
-		
-		testDAG.addEdge(5, 2);
-		testDAG.addEdge(5, 0);
-		testDAG.addEdge(4, 0);
-		testDAG.addEdge(4, 1);
-		testDAG.addEdge(2, 3);
-		testDAG.addEdge(3, 1);	
-		
-		String expectedResult = "5 4 2 3 1 0 ";
-		assertEquals(expectedResult, testDAG.topologicalSort());
-	}
-	
-	@Test
-	public void LCATest()
-	{
-		testDAG = new DirectedAcyclicGraph<Integer, Character>();
-		
-		testDAG.addNode(1, 'a');
-		testDAG.addNode(2, 'b');
-		testDAG.addNode(3, 'c');
-		testDAG.addNode(4, 'd');
-		testDAG.addNode(5, 'e');
-		testDAG.addNode(6, 'f');
-		testDAG.addNode(7, 'g');
-		testDAG.addNode(8, 'h');
-		testDAG.addNode(9, 'i');
-		testDAG.addNode(10, 'j');
-		testDAG.addNode(11, 'k');
-		testDAG.addNode(12, 'l');
-		testDAG.addNode(13, 'm');
+		DirectedAcyclicGraph<Integer, Character> testDAG = new DirectedAcyclicGraph<Integer, Character>();
+
+		testDAG.addNode(1, 'A');
+		testDAG.addNode(2, 'B');
+		testDAG.addNode(3, 'C');
+		testDAG.addNode(4, 'D');
+		testDAG.addNode(5, 'E');
+		testDAG.addNode(6, 'F');
+		testDAG.addNode(7, 'G');
 		
 		testDAG.addEdge(1, 2);
 		testDAG.addEdge(2, 4);
+		testDAG.addEdge(2, 5);
 		testDAG.addEdge(4, 6);
-		testDAG.addEdge(1, 3);
-		testDAG.addEdge(3, 5);
-		testDAG.addEdge(5, 8);
-		testDAG.addEdge(5, 7);
-		testDAG.addEdge(7, 10);
-		testDAG.addEdge(10, 9);
-		testDAG.addEdge(10, 13);
-		testDAG.addEdge(10, 11);
-		testDAG.addEdge(11, 12);
-		
-		Integer rootKey = 1;
-		Integer expectedResult = 5;
-		assertEquals(expectedResult, testDAG.LCA(rootKey, 8, 9));
+		testDAG.addEdge(4, 7);
+
+		assertEquals(1, testDAG.indegree(4));
+		assertEquals(2, testDAG.outdegree(4));
+		assertEquals(5, testDAG.E());
+		assertEquals(7, testDAG.N());
 	}
 
 }

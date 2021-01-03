@@ -357,7 +357,6 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 	
 	/**
 	 * Finds and returns the lowest common ancestor of two nodes in a BST given their keys
-	 * The lowest common ancestor of two nodes is that node which is furthest from a root that both source nodes' paths from that root have in common.
 	 * @param key1 (key of first descendant)
 	 * @param key2 (key of second descendant)
 	 * @return LCA (key of lowest common ancestor of both descendants)
@@ -387,3 +386,5 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 	}
 	
 }
+
+

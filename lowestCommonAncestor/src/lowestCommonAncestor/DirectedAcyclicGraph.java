@@ -2,8 +2,6 @@
  * Directed Acyclic Graph implementation in Java
  * @author MollyCK
  * 2020/11/11
- * 
- * LCA & getLongestPath functions inspired by https://web.archive.org/web/20190914030055/http://www.gghh.name:80/dibtp/2014/02/25/how-does-mercurial-select-the-greatest-common-ancestor.html
  */
 
 /*
@@ -15,8 +13,6 @@
 package lowestCommonAncestor;
 
 import java.util.ArrayList;
-import java.io.*; 
-import java.util.*; 
 
 public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 
@@ -26,16 +22,14 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 	class Node {
 		private Key key;         				// unique identifying attribute
 		private Value val;						// associated data
-		private ArrayList<Key> destinations; 	// list of nodes that you can reach from this
+		private ArrayList<Key> destinations; 		// list of nodes that you can reach from this
 		private int indegree;					// the number of directed edges entering this
 		private int outdegree;					// the number of directed edges leaving this
-		private boolean visited;				// variable used for topological sort
-		
+
 		public Node(Key key, Value val) {
 			this.val = val;
 			this.key = key;
 			this.destinations = new ArrayList<Key>();
-			this.visited = false;
 		}
 		
 		public Key key()
@@ -94,15 +88,7 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		return null;
 	}
 	
-	private void resetVisited()
-	{
-		for(int i = 0 ; i < this.nodes.size(); i++)
-		{
-			this.nodes.get(i).visited = false;
-		}
-	}
-	
- 	public Boolean deleteNode(Key key)
+	public Boolean deleteNode(Key key)
 	{
 		Node toBeDel = get(key);
 		Boolean returnValue = deleteNode(key, this.nodes);
@@ -201,7 +187,8 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 		}
 		return isAcyclic(graphCopy);
 	}
-		
+	
+	
 	/**
 	 * Original pseudo-code algorithm from https://www.cs.hmc.edu/~keller/courses/cs60/s98/examples/acyclic/
 	 * @param graph
@@ -289,143 +276,10 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 			return -1;
 		}
 	}
-	
-	/*
-	 * The below implementation of topological sort was taken from https://www.geeksforgeeks.org/topological-sorting/
-	 * and edited for purpose by MollyCK
-	 */
-	// A recursive function used by topologicalSort 
-    private void topologicalSortUtil(Key v, Stack<Key> stack) 
-    { 
-        // Mark the current node as visited. 
-        get(v).visited = true; 
-        Key i; 
-  
-        // Recur for all the vertices adjacent to this vertex 
-        Iterator<Key> it = get(v).destinations.iterator(); 
-        while (it.hasNext()) { 
-            i = it.next(); 
-            if (!get(i).visited) 
-                topologicalSortUtil(i, stack); 
-        } 
-  
-        // Push current vertex to stack which stores result 
-        stack.push(v); 
-    } 
-  
-    // The function to do Topological Sort. 
-    // It uses recursive topologicalSortUtil() 
-    public String topologicalSort() 
-    { 
-        Stack<Key> stack = new Stack<Key>(); 
-  
-        // Call the recursive helper function to store Topological Sort 
-        // starting from all vertices one by one 
-        for (int i = 0; i < this.nodes.size(); i++) 
-            if (this.nodes.get(i).visited == false) 
-                topologicalSortUtil(this.nodes.get(i).key(), stack); 
-  
-        resetVisited();
-        
-        // Concatenate contents of stack into a String
-        String result = new String();
-        while (stack.empty() == false) 
-            result += (stack.pop() + " "); 
-        return result;
-    } 
-	
-	public ArrayList<Key> getLongestPath(Key root, Key srcNode) 
+
+	public Key LCA(Key node1, Key node2)
 	{
-		Stack<Key> stack = new Stack<Key>(); 
-		ArrayList<Key> distancesKeys = new ArrayList<Key>(this.nodes.size());
-		ArrayList<Integer> distances = new ArrayList<Integer>(this.nodes.size());
-		for(int i = 0 ; i < this.nodes.size() ; i++)
-		{
-			distancesKeys.add(i, this.nodes.get(i).key());
-		}
-		
-		//Call the recursive helper function to store Topological Sort starting from all Nodes one by one  
-		
-		for(int i = 0 ; i < this.nodes.size(); i++)
-		{
-			if(this.nodes.get(i).visited == false)
-			{
-				topologicalSortUtil(this.nodes.get(i).key(), stack);
-			}
-		}
-		
-		//initialise distances to all vertices as infinite and distance to source as 0
-		for(int i = 0 ; i < distancesKeys.size(); i++)
-		{
-			distances.add(i, Integer.MIN_VALUE);
-		}
-		int index = distancesKeys.indexOf(srcNode);
-		distances.set(index, 0);
-		
-		//process Nodes in topological order
-		while(stack.empty() == false)
-		{
-			//get the next vertex from topological order
-			Key u = stack.peek();
-			stack.pop();
-			Key v;
-			
-			//update distances of all adjacent vertices 
-			Iterator<Key> it = get(u).destinations.iterator(); 
-			//if(distances.get(distancesKeys.indexOf(u)) != Integer.MIN_VALUE) // This is always true...
-			//{
-				while (it.hasNext())
-				{
-					v = it.next();
-					if(distances.get(distancesKeys.indexOf(v)) < distances.get(distancesKeys.indexOf(u)) + 1)
-					{
-						distances.set(distancesKeys.indexOf(v), distances.get(distancesKeys.indexOf(u)) + 1);
-					}
-				}
-			//}
-		}
-		
-		for(int i = 0 ; i < this.nodes.size(); i++) 
-		{
-			System.out.println(distances.get(i) == Integer.MIN_VALUE ? "INF" : distances.get(i) + " ");
-		}
-		ArrayList<Key> paths = new ArrayList<Key>();
-		return paths;
-		
-	}
-	
-	/**
-	 * The lowest common ancestor of 2 nodes is that node which is furthest from a root that the source nodes' longest paths from that root have in common.
-	 * @param node1
-	 * @param node2
-	 * @return
-	 * Limitations: the function will return the first possible LCA that it comes across in the first source node's path
-	 * 				E.g. If srcNode1's path has a Key 'g' 5 steps from the root and 'g' is also present in the srcNodes2's path, then it will return 'g' as the LCA regardless of how far it is from the root on srcNode2's path
-	 */
-	public Key LCA(Key root, Key srcNode1, Key srcNode2)
-	{
-		//test if the provided root is actually a root (should only have outcoming edges with no incoming ones) and if provided source nodes are valid
-		if(get(root).indegree == 0 && get(root).outdegree != 0 && isValidNode(srcNode1) && isValidNode(srcNode2))
-		{
-			ArrayList<Key> path1 = getLongestPath(root, srcNode1);
-			ArrayList<Key> path2 = getLongestPath(root, srcNode2);
-			//iterate through the paths from back to front to find the common node (if it exists) that is furthest from the root.
-			Key LCA = null;
-			boolean found = false;
-			for(int i = path1.size()-1 ; i > -1 && !found; i--)
-			{
-				for(int j = path2.size()-1 ; j > -1 && !found; j--)
-				{
-					if(path1.get(i).equals(path2.get(j)))
-					{
-						found = true;
-						LCA = path1.get(i);
-					}
-				}
-			}
-			return LCA;
-		} 
-		else return null;
+
 	}
 	
 }

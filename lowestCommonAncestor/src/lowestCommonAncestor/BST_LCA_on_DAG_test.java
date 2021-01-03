@@ -11,7 +11,7 @@ import org.junit.Test;
  * DirectedAcyclicGraph class
  */
 
-public class BST_LCA_on_DAG_test {
+public class BST_LCA_on_DAG_Test {
 	
 	DirectedAcyclicGraph<Integer, Character> testDAG;
 	
@@ -37,3 +37,71 @@ public class BST_LCA_on_DAG_test {
 		
 		assertEquals(4, );
 	}
+	
+	
+	/**
+	 * Finds the path from root to child
+	 * @param child key of destination node
+	 * @return path as an ArrayList of Keys with root node at index 0
+	 */
+	public ArrayList<Integer> getPath(Integer child)
+	{
+		ArrayList<lowestCommonAncestor.DirectedAcyclicGraph.Node> pathNodes = new ArrayList<lowestCommonAncestor.DirectedAcyclicGraph.Node>();
+		pathNodes = getPath(this.root, child, pathNodes);
+		ArrayList<Integer> pathKeys = new ArrayList<Integer>();
+		for(int i = 0 ; i < pathNodes.size() - 1 ; i++)
+		{
+			pathKeys.add(i, pathNodes.get(i).key());
+		}
+		return pathKeys;	
+	}
+	
+	private ArrayList<lowestCommonAncestor.DirectedAcyclicGraph.Node> getPath(lowestCommonAncestor.DirectedAcyclicGraph.Node root, Integer child, ArrayList<lowestCommonAncestor.DirectedAcyclicGraph.Node> path)
+	{
+		path.add(root);
+		if(root.key.equals(child))
+		{
+			return path;
+		}
+		if(root.left != null && getPath(root.left, child, path) != null)
+		{
+			return path;
+		}
+		if(root.right != null && getPath(root.right, child,path) != null)
+		{
+			return path;
+		}
+		path.remove(path.size()-1);
+		return null;
+	}
+	
+	/**
+	 * Finds and returns the lowest common ancestor of two nodes in a BST given their keys
+	 * @param key1 (key of first descendant)
+	 * @param key2 (key of second descendant)
+	 * @return LCA (key of lowest common ancestor of both descendants)
+	 */
+	public Integer LCA(Integer key1, Integer key2)
+	{
+		Integer LCA = null;
+		if(!this.contains(key1) & !this.contains(key2))
+		{
+			return LCA;
+		}
+		ArrayList<Integer> path1 = getPath(key1);
+		ArrayList<Integer> path2 = getPath(key2);
+		boolean found = false;
+		for(int i = path1.size()-1 ; i > -1 && !found; i--)
+		{
+			for(int j = path2.size()-1 ; j > -1 && !found; j--)
+			{
+				if(path1.get(i).equals(path2.get(j)))
+				{
+					found = true;
+					LCA = path1.get(i);
+				}
+			}
+		}
+		return LCA;
+	}
+}
