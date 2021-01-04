@@ -6,21 +6,27 @@ import org.junit.Test;
 
 public class BinarySearchTreeTest {
 
+	@Test
+	public void testPut() {
+		BinarySearchTree<Integer, Character> testBST = new BinarySearchTree<>();
+		//test empty tree with null val
+		testBST.put(1, null);
+	}
 	
 	@Test
 	public void testIsEmpty() {
-		BinarySearchTree<Integer, Character> testTree = new BinarySearchTree<Integer, Character>();
+		BinarySearchTree<Integer, Character> testTree = new BinarySearchTree<>();
 		//Test empty tree
-		assertEquals( "Testing empty tree", true, testTree.isEmpty());
+		assertTrue("Testing empty tree", testTree.isEmpty());
 		
 		//Test not empty tree
 		testTree.put(1, 'A');
-		assertEquals( "Testing non-empty tree", false, testTree.isEmpty());
+		assertFalse("Testing non-empty tree", testTree.isEmpty());
 	}
 	
 	@Test
 	public void testHeight(){
-		BinarySearchTree<Integer, Character> testTree = new BinarySearchTree<Integer, Character>();
+		BinarySearchTree<Integer, Character> testTree = new BinarySearchTree<>();
 		//Test empty tree
 		assertEquals( "Testing height for empty tree", -1, testTree.height());
 		
@@ -39,7 +45,7 @@ public class BinarySearchTreeTest {
 	
 	@Test
 	 public void testPrettyPrint() {
-		BinarySearchTree<Integer, Integer> bst = new BinarySearchTree<Integer, Integer>();
+		BinarySearchTree<Integer, Integer> bst = new BinarySearchTree<>();
 	     assertEquals("Checking pretty printing of empty tree",
 	             "-null\n", bst.prettyPrintKeys());
 	      
@@ -80,12 +86,12 @@ public class BinarySearchTreeTest {
 	      "   |-null\n" +
 	      "    -null\n";
 	     assertEquals("Checking pretty printing of non-empty tree", result, bst.prettyPrintKeys());
-	     }
-	
+	}
+
 	@Test
 	public void testMedian()
 	{
-		BinarySearchTree<Character, Integer> testTree = new BinarySearchTree<Character, Integer>();
+		BinarySearchTree<Character, Integer> testTree = new BinarySearchTree<>();
 		//testing empty tree
 		Character expectedResult = null;
 		assertEquals("Testing median() for empty tree", expectedResult, testTree.median());
@@ -102,16 +108,12 @@ public class BinarySearchTreeTest {
 		testTree.put('E', 5);
 		expectedResult = 'C';
 		assertEquals("Testing median() for EDCBA tree", expectedResult, testTree.median());
-		
-		//testing tree with median in left subtree
-		testTree = new BinarySearchTree<Character, Integer>();
-		
 	}
 	
-	/** <p>Test {@link BST#delete(Comparable)}.</p> */
+	/** <p>Test {@link BinarySearchTree#delete(Comparable)}.</p> */
     @Test
     public void testDelete() {
-    	BinarySearchTree<Integer, Integer> bst = new BinarySearchTree<Integer, Integer>();
+    	BinarySearchTree<Integer, Integer> bst = new BinarySearchTree<>();
         bst.delete(1);
         assertEquals("Deleting from empty tree", "()", bst.printKeysInOrder());
         
@@ -143,7 +145,7 @@ public class BinarySearchTreeTest {
                 "(((()1())2(()4(()5())))7())", bst.printKeysInOrder());
     }
     
-    private BinarySearchTree<Integer, Character> testBST = new BinarySearchTree<Integer, Character>();
+    private BinarySearchTree<Integer, Character> testBST = new BinarySearchTree<>();
     
     @Test
     public void testLCA() {
@@ -179,9 +181,17 @@ public class BinarySearchTreeTest {
 		expectedResult = null;
 		assertEquals("", expectedResult, testBST.LCA(7, 3));
 		
+		//test invalid source node 1
+		expectedResult = null;
+		assertEquals("", expectedResult, testBST.LCA(-7, 3));
+		
+		//test invalid source node 2
+		expectedResult = null;
+		assertEquals("", expectedResult, testBST.LCA(7, -3));
+		
 		
 		//testing "single line" tree
-		testBST = new BinarySearchTree<Integer, Character>();
+		testBST = new BinarySearchTree<>();
 		testBST.put(7, '7');   //        7
 		testBST.put(5, '5');   //       /
 		testBST.put(3, '3');   //      5    

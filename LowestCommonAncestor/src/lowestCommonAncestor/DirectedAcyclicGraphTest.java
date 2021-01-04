@@ -3,7 +3,8 @@ package lowestCommonAncestor;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import org.junit.Test;
+import lowestCommonAncestor.DirectedAcyclicGraph;
+import static org.junit.Assert.assertEquals;
 
 public class DirectedAcyclicGraphTest {
 	DirectedAcyclicGraph<Integer, Character> testDAG;
@@ -11,7 +12,7 @@ public class DirectedAcyclicGraphTest {
 	@Test
 	public void testAddNode() 
 	{
-		testDAG = new DirectedAcyclicGraph<Integer, Character>();
+		testDAG = new DirectedAcyclicGraph<>();
 		
 		//test empty graph
 		testDAG.addNode(1, 'a');
@@ -37,10 +38,10 @@ public class DirectedAcyclicGraphTest {
 	@Test 
 	public void testGet() 
 	{
-		testDAG = new DirectedAcyclicGraph<Integer, Character>();
+		testDAG = new DirectedAcyclicGraph<>();
 		
 		//test empty graph
-		assertEquals(null, testDAG.get(9));
+		assertNull(testDAG.get(9));
 		
 		//test non-empty graph with valid Node
 		testDAG.addNode(1, 'a');
@@ -52,15 +53,15 @@ public class DirectedAcyclicGraphTest {
 		assertEquals(expectedVal, testDAG.get(1).val());
 		
 		//test non-empty graph with invalid Node
-		assertEquals(null, testDAG.get(4));
+		assertNull(testDAG.get(4));
 		
 		//test non-empty graph with null key
-		assertEquals(null, testDAG.get(null));
+		assertNull(testDAG.get(null));
 	}
 	
 	@Test
 	public void testDeleteNode() {
-		testDAG = new DirectedAcyclicGraph<Integer, Character>();
+		testDAG = new DirectedAcyclicGraph<>();
 		
 		//test empty graph
 		assertFalse(testDAG.deleteNode(3));
@@ -79,8 +80,14 @@ public class DirectedAcyclicGraphTest {
 	}
 	
 	@Test
-	public void testAddEdge() {
-		DirectedAcyclicGraph<Integer, Character> edgeTest = new DirectedAcyclicGraph<Integer, Character>();
+	public void testAddEdge() 
+	{
+		DirectedAcyclicGraph<Integer, Character> edgeTest = new DirectedAcyclicGraph<>();
+		
+		//Test invalid source & invalid destination
+		assertFalse(edgeTest.addEdge(0, 1));
+		
+		//Test valid inputs
 		edgeTest.addNode(0, 'A');
 		edgeTest.addNode(1, 'B');
 		edgeTest.addNode(-2, 'Y');
@@ -94,13 +101,12 @@ public class DirectedAcyclicGraphTest {
 		edgeTest.addEdge(1, 2); //there is no node with key 2
 
 		assertEquals("Testing edge count is 2", 2, edgeTest.E());
-
 	}
 
 	@Test
 	public void testIsAcyclic() 
 	{
-		testDAG = new DirectedAcyclicGraph<Integer, Character>();
+		testDAG = new DirectedAcyclicGraph<>();
 		
 		//test empty graph
 		assertTrue(testDAG.isAcyclic());
@@ -125,38 +131,71 @@ public class DirectedAcyclicGraphTest {
 		
 		//test try to make cyclic graph
 		assertFalse(testDAG.addEdge(6, 4)); //trying to add this edge will fail because it would make the graph cyclic
-		assertTrue(testDAG.isAcyclic()); //make sure that there hasn't been an error somewhere and that the graph is still acyclical and unchanged
+		assertTrue(testDAG.isAcyclic()); //make sure that there hasn't been an error somewhere and that the graph is still acyclic and unchanged
 	}
 	
 	@Test
-	public void testGetLeaf() {
-		
-	}
-	
-	@Test
-	public void testIsValidNode() 
+	public void testIsValidNodes() 
 	{
-		testDAG = new DirectedAcyclicGraph<Integer, Character>();
+		testDAG = new DirectedAcyclicGraph<>();
 		
 		//test empty graph
 		assertFalse(testDAG.isValidNode(4));
+		assertFalse(testDAG.isValidNode(4, 'D'));
 		
-		//test non-empty graph with invalid key
+		//Non-empty graph tests...
+		testDAG.addNode(0, 'A');
+		testDAG.addNode(1, 'B');
+		testDAG.addNode(-2, 'Y');
+		testDAG.addNode(-5, 'V');
+		
+		//test with invalid key
 		assertFalse(testDAG.isValidNode(4));
 		
-		//test with null key
+		//test with null values
 		assertFalse(testDAG.isValidNode(null));
+		assertFalse(testDAG.isValidNode(null, null));
+		
+		//test with valid key and incorrect val
+		assertFalse(testDAG.isValidNode(1, 'A'));
+		
+		//test with valid key and correct val
+		assertTrue(testDAG.isValidNode(1, 'B'));
+		
+		//test with null key and valid val
+		assertFalse(testDAG.isValidNode(null, 'A'));
+		
+		//test with valid key and null val
+		assertFalse(testDAG.isValidNode(1, null));
 	}
 
 	@Test
 	public void inDegreeTest(){
-		DirectedAcyclicGraph<Integer, Character> testDAG = new DirectedAcyclicGraph<Integer, Character>();
-		assertEquals("", -1, testDAG.indegree(-3));
+		DirectedAcyclicGraph<Integer, Character> testDAG = new DirectedAcyclicGraph<>();
+
+		//test empty graph
+		assertEquals(-1, testDAG.indegree(-3));
+
+		//Non-empty graph tests...
+		testDAG.addNode(0, 'A');
+		testDAG.addNode(1, 'B');
+		testDAG.addNode(-2, 'Y');
+		testDAG.addNode(-5, 'V');
+
+		testDAG.addEdge(0, 1);
+		testDAG.addEdge(-2, -5);
+
+		//test valid key
+		assertEquals(1, testDAG.indegree(1));
+
+		//test invalid key
+		assertEquals(-1, testDAG.indegree(2));
+
 	}
 
 	@Test
 	public void outDegreeTest(){
-		DirectedAcyclicGraph<Integer, Character> testDAG = new DirectedAcyclicGraph<Integer, Character>();
+		DirectedAcyclicGraph<Integer, Character> testDAG = new DirectedAcyclicGraph<>();
 		testDAG.addNode(1, 'A');
 		testDAG.addNode(2, 'B');
 		testDAG.addNode(3, 'C');
@@ -164,40 +203,65 @@ public class DirectedAcyclicGraphTest {
 		testDAG.addNode(5, 'E');
 		testDAG.addNode(6, 'F');
 		testDAG.addNode(7, 'G');
-		
+
 		testDAG.addEdge(1, 2);
 		testDAG.addEdge(2, 4);
 		testDAG.addEdge(2, 5);
 		testDAG.addEdge(4, 6);
 		testDAG.addEdge(4, 7);
-		
-		assertEquals("", -1, testDAG.outdegree(8));	
-		assertEquals("", 2, testDAG.outdegree(4));
+
+		assertEquals(-1, testDAG.outdegree(8));	
+		assertEquals(2, testDAG.outdegree(4));
 	}
 
 	@Test
-	public void testForDAG()
+	public void topologicalSortTest()
 	{
-		DirectedAcyclicGraph<Integer, Character> testDAG = new DirectedAcyclicGraph<Integer, Character>();
+		testDAG = new DirectedAcyclicGraph<>();
 
-		testDAG.addNode(1, 'A');
-		testDAG.addNode(2, 'B');
-		testDAG.addNode(3, 'C');
-		testDAG.addNode(4, 'D');
-		testDAG.addNode(5, 'E');
-		testDAG.addNode(6, 'F');
-		testDAG.addNode(7, 'G');
-		
-		testDAG.addEdge(1, 2);
-		testDAG.addEdge(2, 4);
-		testDAG.addEdge(2, 5);
-		testDAG.addEdge(4, 6);
-		testDAG.addEdge(4, 7);
+		testDAG.addNode(0, 'a');
+		testDAG.addNode(1, 'b');
+		testDAG.addNode(2, 'c');
+		testDAG.addNode(3, 'd');
+		testDAG.addNode(4, 'e');
+		testDAG.addNode(5, 'f');
 
-		assertEquals(1, testDAG.indegree(4));
-		assertEquals(2, testDAG.outdegree(4));
-		assertEquals(5, testDAG.E());
-		assertEquals(7, testDAG.N());
+		testDAG.addEdge(5, 2);
+		testDAG.addEdge(5, 0);
+		testDAG.addEdge(4, 0);
+		testDAG.addEdge(4, 1);
+		testDAG.addEdge(2, 3);
+		testDAG.addEdge(3, 1);	
+
+		String expectedResult = "5 4 2 3 1 0 ";
+		assertEquals(expectedResult, testDAG.topologicalSort());
 	}
 
+	@Test
+	public void testN() 
+	{
+		testDAG = new DirectedAcyclicGraph<>();
+
+		testDAG.addNode(0, 'a');
+		testDAG.addNode(1, 'b');
+		testDAG.addNode(2, 'c');
+		testDAG.addNode(3, 'd');
+		testDAG.addNode(4, 'e');
+		testDAG.addNode(5, 'f');
+
+		testDAG.addEdge(5, 2);
+		testDAG.addEdge(5, 0);
+		testDAG.addEdge(4, 0);
+		testDAG.addEdge(4, 1);
+		testDAG.addEdge(2, 3);
+		testDAG.addEdge(3, 1);
+
+		assertEquals(testDAG.N(), 6);
+	}
+
+	/**
+	 * The tests for LCA are in a separate file for ease because they are parameterised tests
+	 */
+
+	
 }
