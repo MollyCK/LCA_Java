@@ -11,7 +11,6 @@ package lowestCommonAncestor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 	private Node root;             // root of BST
@@ -122,7 +121,7 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
 	/**
 	 * Tree height.
 	 *
-	 * Asymptotic worst-case running time using Theta notation: TODO
+	 * Asymptotic worst-case running time using Theta notation: 
 	 *
 	 * @return the number of links from the root to the deepest leaf.
 	 *
