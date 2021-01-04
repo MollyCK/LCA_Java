@@ -1,5 +1,6 @@
-package lowestCommonAncestor;
+package lowestCommonAncestor.tests;
 
+import lowestCommonAncestor.BinarySearchTree;
 import static org.junit.Assert.*;
 
 import org.junit.Test;

@@ -1,10 +1,8 @@
-package lowestCommonAncestor;
-
-import static org.junit.Assert.*;
-import org.junit.Test;
+package lowestCommonAncestor.tests;
 
 import lowestCommonAncestor.DirectedAcyclicGraph;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class DirectedAcyclicGraphTest {
 	DirectedAcyclicGraph<Integer, Character> testDAG;

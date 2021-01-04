@@ -1,5 +1,6 @@
-package lowestCommonAncestor;
+package lowestCommonAncestor.tests;
 
+import lowestCommonAncestor.DirectedAcyclicGraph;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;

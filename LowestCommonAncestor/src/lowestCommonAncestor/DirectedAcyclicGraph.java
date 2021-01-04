@@ -15,7 +15,7 @@ public class DirectedAcyclicGraph<Key extends Comparable<Key>, Value> {
 	/**
 	 * Internal node class.
 	 */
-	class Node {
+	public class Node {
 		private final Key key;         				// unique identifying attribute
 		private final Value val;					// associated data
 		private final ArrayList<Key> destinations; 	// list of nodes that you can reach from this
